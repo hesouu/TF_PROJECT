@@ -73,5 +73,27 @@ Destroy complete! Resources: 0 destroyed.
 ```
 
 
-
 ## EC2 구성
+### 최종 형태
+```
+Internet
+     │
+     │
+Elastic IP          <- 리소스 생성
+     │
+┌──────────────┐
+│     EC2      │
+│ AmazonLinux2 │    <- 아마존 리눅스 사용/ec2-user
+└──────────────┘
+     │
+Security Group      <- 보안그룹 전용 생성/ssh-22 포트 0.0.0.0/0 개방/ 인바운드(22번),아웃바운드(전체)
+     │
+VPC(Default)        <- 기본 사용
+
+----
+pem 파일, 스토리지, 리전, 이름, ---
+```
+
+### 세부 구성
+- variables.tf
+    - 리전, 인스턴스 유형, 키이름 설정

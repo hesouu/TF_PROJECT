@@ -63,5 +63,5 @@ data "aws_ami" "maybejohn_linux" {
       name = "name"
       values = [ "al2023-ami-*" ]
     }
-  
+    # 프리티어를 사용하려면 필터를 추가해야함
 }

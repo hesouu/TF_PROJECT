@@ -10,3 +10,6 @@ output "defalut_subnets_id" {
     value = data.aws_subnets.default.ids
     description = "서울 리전의 기본 VPC에 속한 서브넷 id 리스트"
 }
+
+# 현재 위치 확인 ( ~/basic/ )
+# 출결결과 확인 (init -> plan -> apply -> destroy) 

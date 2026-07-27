@@ -95,10 +95,10 @@ resource "aws_instance" "DE-AI-09-RICE" {
 }
 
 # 5. Elastic IP 생성 -> EC2 연결 (차후 IP를 미리 확보하고 EC2 생성되면 연결하는 방식 진화)
-resource "aws_eip" "DE-AI-25-eip" {
-  # ec2 인스턴스
-  instance = aws_instance.DE-AI-09-RICE.id
-  # 네트워크
-  domain = "vpc"
-}
+# resource "aws_eip" "DE-AI-25-eip" {
+#   # ec2 인스턴스
+#   instance = aws_instance.DE-AI-09-RICE.id
+#   # 네트워크
+#   domain = "vpc"
+# }
 

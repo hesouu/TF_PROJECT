@@ -169,4 +169,110 @@ resource "aws_security_group" "DE-AI-09-RICE" {
 }
 ```
 
-#
+# depends_on
+- 현재 리소스 생성전에 지정한 리소스가 먼저 생성되어야 한다 라는것을 명시적으로 알려주는 표기
+- <-> 암묵적 선언 (테라폼 검토 -> 자연스럽게 구성)
+```
+# 명시적
+resource "Aws_security_group" "web" {
+    ..
+}
+resource "aws_instance" "web" {
+    # 명시적 선언 => 보안그룹을 먼저 생성한 후 => 인스턴스 구성하라
+    depends_on = [ aws_security_group.web ]
+}
+# 암묵적
+resource "aws_vpc" "web" {
+    ...
+}
+resource "aws_subnet" "public"{
+    # 암묵적 -> vpc가 먼저 구성되어야만 서브넷 구성에 매개변수를 세팅할수 있음 -> vpc 선행된다
+    vpc_id = aws_vpc.web.id
+}
+```
+
+# lifecycle (생명주기)
+- 리소스의 생명주기를 어떻게 관리 할 것인지 메타 인지
+- 동작 : 생성, 수정, 교체, 삭제 기반으로 파생되어 구성'
+- 주요 유형
+    - 삭제 하지 않겠다 => prevent_destroy
+        - EIP -> 고정 IP
+        - RDS  (데이터베이스) -> 데이터
+        - S3 Bucket (객체 저장소 -> 저장 단위(버킷/바구니) -> 유지)
+        - Route53 -> 도메인
+        - 프로젝트간 영속 저장/유지 대상
+        ```
+            resource "aws_eip" "DE-AI-25-eip" {
+            instance = aws_instance.DE-AI-09-RICE.id
+            domain = "vpc"
+            # 삭제 하지 않는다!! => terraform destroy 수행시 에러 발생하고 넘어감
+            lifecycle {
+                prevent_destroy = true
+            }
+            }
+        ```
+    - 삭제하기 전에 먼저 생성하고 나서 삭제한다 (교체하는 컨셉, 서비스 중단(Downtime)에 대한 대처)
+        - 테라폼은 삭제 => 생성 흐름을 기본으로 가지고 있음
+            - 서비스 중단이 잠시 발생됨
+            - 대처 : 새 리소스 생성 => 이후 기존 리소스 삭제
+        ```
+            ...
+                lifecycle {
+                    prevent_destroy = true
+                }
+            ...
+        ```
+
+# workspace (작업공간)
+- count 폴더(신규 생성) 하위에 상관없는 *.tf 이동 시킴 (실습상 격리)
+    - 리소스 생성 코드등 배제하고 작업공간만 확인
+- workspace 목록 조회
+    ```
+        terraform workspace list
+        ---
+        # * : 현재 사용중인(활성화된) workspace 표시
+        # default : 기본으로 만들어지는 workspace임
+        * default
+    ```
+- workspace 생성 (기본, 개발, 테스트, 운영,... : 상태정보)
+    ```
+        terraform workspace select dev
+        ---
+        # 없다면
+        Workspace "dev" doesn't exist.
+        You can create this workspace with the "new" subcommand 
+        or include the "-or-create" flag with the "select" subcommand.
+
+        # 생성 -> 활성화(*) 이동
+        terraform workspace new dev
+        ---
+        Created and switched to workspace "dev"!
+        You're now on a new, empty workspace. Workspaces isolate their state,
+        so if you run "terraform plan" Terraform will not see any existing state
+        for this configuration.
+
+        # 조회
+        terraform workspace list
+        ---
+          default
+        * dev
+
+        # 특정 상태 선택
+        terraform workspace select default
+        ---
+        Switched to workspace "default".
+
+        # 목록
+        
+
+        # 현재 상태 확인
+        terraform show
+
+        # 삭제 -> list 하면 dev가 안보임
+        terraform workspace delete dev
+        ---
+        Deleted workspace "dev"!
+
+    ```
+
+- 환경별(상태별) 별도 state를 기반으로 관리하여 소스코드등 관리

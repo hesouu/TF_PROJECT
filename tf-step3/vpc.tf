@@ -6,6 +6,20 @@ resource "aws_vpc" "DE-AI-09-company" {
   enable_dns_hostnames  = true
   enable_dns_support    = true
   tags = {
-    Name = "company-vpc"
+    Name = "09-beer-company-vpc"
   } 
+}
+## 서브넷 구성 (public)
+resource "aws_subnet" "public" {
+  # 암묵적 의존성 -> 서브넷이 구성을 위해서는 반드시 vpc가 먼저 생성되어야 함
+  vpc_id = aws_vpc.DE-AI-09-company.id
+  # CIDR 가용영역 설정, VPC보다 작게, 24(3자리 고정) -> 256개 가용
+  cidr_block = "10.0.1.0/24"
+  # 리전마다 가용영역이 a,b,c,d or a,b,c 제한 => 데이터센터 동수
+  availability_zone = "ap-northeast-2a"
+  # map 타입으로 관리 public_ip
+  map_public_ip_on_launch = true
+  tags = {
+    Name = "DE-AI-09-public-subnet"
+  }
 }

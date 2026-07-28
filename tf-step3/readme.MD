@@ -229,3 +229,8 @@ AWS
     - 작성
     - terraform init
     - terraform plan
+
+## 서브넷 구성 (public)
+- 작성
+- terraform apply
+- terraform state list

@@ -16,7 +16,7 @@ data "aws_subnets" "default" {
 # 3. 보안그룹 생성 선언 - EC2 진입 하는데 인바운드 IP/포트, 아웃바운드 IP/포트 설정 => 접근 제한!!
 resource "aws_security_group" "DE-AI-09-RICE" {
   # 메타 정보
-  name = "terraform-09-sg22"
+  name = "terraform-09-sg-4ce2ecurit"
   # ASCII만 지원
   description = "de-ai-09 security group"
   # 보안 그룹은 VPC에 종속되어서 구성됨
@@ -63,7 +63,7 @@ data "aws_ami" "maybejohn_linux" {
     name   = "name"
     values = ["al2023-ami-*"]
   }
-  # 프리티어를 사용하려면 필터를 추가해야함 -> ec2에서 인스턴스 유형이 t2/t3.micro등 선택되어야 확정됨
+  # aws 프리티어를 사용하려면 필터를 추가해야함 -> ec2에서 인스턴스 유형이 t2/t3.micro등 선택되어야 확정됨
   # 필터 추가
   filter {
     name   = "architecture"
@@ -89,7 +89,7 @@ resource "aws_instance" "DE-AI-09-RICE" {
   # 고급 설정 생략
   # 태그
   tags = {
-    Name = "DE-AI-09-IaC-TF-EC2"
+    Name = "DE-AI-09-rrrrice"
   }
   # ip는 임시로 자동할당 (현재 eip사용 x)
 

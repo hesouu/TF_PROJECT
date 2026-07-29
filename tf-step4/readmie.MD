@@ -73,3 +73,6 @@ L VPC
 - web -> was, was는 오직 web에서 tcp 8000포트로만 오픈된다. rule 구성
 
 - was-> db, db는 오직 was에서 tcp 3306포트로만 오픈된다. rule 구성
+
+# 서브넷 Private subnet 구성
+- 서브넷, 라우트 테이블, 서브넷-라우트 테이블 연결

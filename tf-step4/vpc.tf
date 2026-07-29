@@ -52,12 +52,37 @@ resource "aws_route_table_association" "public" {
   subnet_id      = aws_subnet.public.id
   route_table_id = aws_route_table.public.id
 }
+############################################
+# NAT Gateway
+############################################
+# 1. eip
+resource "aws_eip" "DE-water-09-IaC-TF-EIP-NAT" {
+  domain = "vpc"
+  tags = {
+    Name = "DE-water-09-NAT-EIP"
+  }
+}
+
+# 2. NAT Gateway`
+resource "aws_nat_gateway" "DE-water-09-NAT" {
+    # EIP 할당
+  allocation_id = aws_eip.DE-water-09-IaC-TF-EIP-NAT.id
+  subnet_id = aws_subnet.public.id
+tags = {
+    Name = "DE-water-09-NAT-GW"
+  }
+  # 명시적 의존성 표기 - IGW 선행 생성후 진행
+  depends_on = [ 
+    aws_internet_gateway.company
+   ]
+}
+
 
 # private 서브넷 구성
 resource "aws_subnet" "private" {
-  vpc_id = aws_vpc.DE-AI-09-company.id
-  cidr_block = "10.0.2.0/24"
-  availability_zone = "ap-northeast-2a"  
+  vpc_id            = aws_vpc.DE-AI-09-company.id
+  cidr_block        = "10.0.2.0/24"
+  availability_zone = "ap-northeast-2a"
   tags = {
     Name = "DE-water-09-private-subnet"
   }
@@ -65,7 +90,11 @@ resource "aws_subnet" "private" {
 
 # 라우트 테이블
 resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.DE-AI-09-company.id  
+  vpc_id = aws_vpc.DE-AI-09-company.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_nat_gateway.DE-water-09-NAT.id
+  }
   tags = {
     Name = "DE-AI-09-company-private-rt"
   }

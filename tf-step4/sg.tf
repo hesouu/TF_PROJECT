@@ -51,12 +51,12 @@ resource "aws_security_group" "sg" {
   # 반복 데이터로 구성한 locals 주입(세팅) -> web, was, db 총 3개의 맴버를 가짐
   for_each = local.security_groups
   # for_each에 Map 타입으로 주입 => each.key, each.value 형태로 반복적, 순서대로 획득 
-  # 이름 => DE-AI-25-web-sg-해시값, DE-AI-25-was-sg-해시값, DE-AI-25-db-sg-해시값
+  # 이름 => DE-AI-09-web-sg-해시값, DE-AI-09-was-sg-해시값, DE-AI-09-db-sg-해시값
   name_prefix = "DE-water-09-${each.key}-sg-"
   description = "${upper(each.key)} Security Group"
 
   # VPC 지정
-  vpc_id = aws_vpc.DE-AI-25-company.id
+  vpc_id = aws_vpc.DE-AI-09-company.id
 
   # ingress 동적 생성 => 블록 반복 구성 => dynamic ingress
   dynamic "ingress" {

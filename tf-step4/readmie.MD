@@ -37,7 +37,7 @@ L VPC
                 L EC2 (Db)  - SG  (22, 3306)
 
 # 예상되는 작업
-- 퍼블릭 서븐넷 활용
+- 퍼블릭 서브넷 활용
     - 반복 표현으로 구성
         - SG는 반복 구성 (locals, for_each, dynamic 활용)
         - EC2는 반복 구성 (locals, for_each, dynamic 활용)

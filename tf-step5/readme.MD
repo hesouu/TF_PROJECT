@@ -112,6 +112,7 @@ L userdata-web.sh.tftpl : 테라폼 템플릿 파일, web ec2 구성시 초기�
 L userdata-was.sh.tftpl : 테라폼 템플릿 파일, was ec2 구성시 초기에 세팅해야할 내용 쉘스크립트 구성 등 내용 포함
 
 
+
 # SSM 관리 (AWS Systems Manager)
 - 별도의 Pem 파일 없이 접속 가능함
 - EC2에 접속하는것만 목표

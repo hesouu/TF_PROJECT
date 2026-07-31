@@ -12,8 +12,8 @@ locals {
   }
   # 서울 리전 2개 가용영역(a, c) 사용 (본인 속한 리전 이름으로 변경)
   azs = {
-    a = "us-west-2a"
-    c = "us-west-2c"
+    a = "us-west-1a"
+    b = "us-west-1c"
   }
   # ALB -> 2개 가용영역 (ac)에 서브넷 각각 1개(퍼블릭) -> cidr 설정
   public_subnets = {

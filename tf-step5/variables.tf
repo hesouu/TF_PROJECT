@@ -15,12 +15,12 @@ variable "instance_type" {
   type        = string
   description = "WEB/WAS EC 인스턴스 유형"
 }
-variable "web_desired-capacity" {
+variable "web_desired_capacity" {
   default     = 2
   type        = number
   description = "WEB ASG 기본 인스턴스 수"
 }
-variable "was_desired-capacity" {
+variable "was_desired_capacity" {
   default     = 2
   type        = number
   description = "WAS ASG 기본 인스턴스 수"

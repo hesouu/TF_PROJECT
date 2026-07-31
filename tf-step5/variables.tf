@@ -4,12 +4,7 @@ variable "region" {
   description = " AWS 리전"
 } ########################################
 # tf 전체에서 사용할 변수 7개(컨셉) 정의
-########################################
-variable "region" {
-  default     = "us-west-1"
-  type        = string
-  description = "AWS 리전"
-}
+##########################################
 variable "environment" {
   default     = "dev"
   type        = string

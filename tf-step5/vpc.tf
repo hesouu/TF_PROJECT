@@ -64,7 +64,7 @@ resource "aws_subnet" "db" {
 }
 
 # Public Route Table/association
-resource "aws_route_table" "private" {
+resource "aws_route_table" "public" {
   vpc_id       = aws_vpc.main.id
   route {
     cidr_block = "0.0.0.0/0"
@@ -74,7 +74,6 @@ resource "aws_route_table" "private" {
     Name       = "${local.project}-PUBLIC-RT"
   }
 }
-
 resource "aws_route_table_association" "public" {
   for_each       = aws_subnet.public
   subnet_id      = each.value.id # a 존의 서브냇, c 존의 서브넷 => 반복 구성 연결
@@ -82,7 +81,53 @@ resource "aws_route_table_association" "public" {
 }
 
 # Nate Gateway - eip
+resource "aws_eip" "nat" {
+  for_each = local.azs # a존, c존에 각각 IP 할당
+  domain = "vpc"
+  tags = {
+    Name = "${local.project}-NAT-EIP-${upper(each.key)}" # A, C
+  }
+}
+resource "aws_nat_gateway" "main" {
+  for_each = local.azs
+  allocation_id = aws_eip.nat[each.key].id # ..nat['A']...nat['C']
+  subnet_id = aws_subnet.public[each.key].id # A존의 퍼블릭 서브넷, C존의 퍼블릭 서브넷 각각 연결
+  tags = {
+    Name = "${local.project}-NAT-${upper(each.key)}"
+  }
+  depends_on = [ 
+    aws_internet_gateway.main
+   ]
+}
 
 # Private App Route Table/association - Web, Was
+resource "aws_route_table" "app" {
+  for_each = local.azs
+  vpc_id = aws_vpc.main.id
+  route = {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_net_gateway.main[each.key].id
+  }
+  tags = {
+    Name = "${local.project}-APP-RT"
+  }
+}
+resource "aws_route_table_association" "priavate" {
+  for_each = aws_subnet.app
+  subnet_id = each.value.id
+  route_table_id = aws_route_table.app[each.key].id
+}
 
 # Private Db Route Table/association - RDS
+# RDS 서비스 사용 -> 기존 EC2 기반 NAT 구성과 상이함
+resource "aws_route_table" "db" {
+  vpc_id = aws_vpc.main.id
+  tags = {
+    Name = "${local.project}-DB-RT"
+  }
+}
+resource "aws_route_table_association" "priavate" {
+  for_each = aws_subnet.db
+  subnet_id = each.value.id
+  route_table_id = aws_route_table.db.id
+}

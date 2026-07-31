@@ -6,14 +6,14 @@ locals {
   project = "DE-water-09-IaC-3tier-V1"
   # 리소스에 적용된 공용 태그 => 커스텀 구성 태그들을 리소스에 공통 배치하기 위함
   common_tags = {
-    Project     = locals.project
+    Project     = local.project
     Environment = var.environment
     ManageBy    = "Terraform"
   }
   # 서울 리전 2개 가용영역(a, c) 사용 (본인 속한 리전 이름으로 변경)
   azs = {
     a = "us-west-2a"
-    c = "us-west-1c"
+    c = "us-west-2c"
   }
   # ALB -> 2개 가용영역 (ac)에 서브넷 각각 1개(퍼블릭) -> cidr 설정
   public_subnets = {

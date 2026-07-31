@@ -1,42 +1,43 @@
+######################################
+# tf 전체에서 사용할 변수 8개(컨셉) 정의
+######################################
 variable "region" {
+  description = "AWS 리전"
+  type        = string
   default     = "us-west-1"
-  type        = string
-  description = " AWS 리전"
-} ########################################
-# tf 전체에서 사용할 변수 7개(컨셉) 정의
-##########################################
+}
 variable "environment" {
-  default     = "dev"
-  type        = string
   description = "구동 환경"
+  type        = string
+  default     = "dev"
 }
 variable "instance_type" {
-  default     = "t3.micro"
-  type        = string
   description = "WEB/WAS EC 인스턴스 유형"
+  type        = string
+  default     = "t3.micro"
 }
 variable "web_desired_capacity" {
-  default     = 2
-  type        = number
   description = "WEB ASG 기본 인스턴스 수"
+  type        = number
+  default     = 2
 }
 variable "was_desired_capacity" {
-  default     = 2
-  type        = number
   description = "WAS ASG 기본 인스턴스 수"
+  type        = number
+  default     = 2
 }
 variable "db_instance_class" {
-  default     = "db.t3.micro"
+  description = "DB 인스턴스 클레스"
   type        = string
-  description = "DB 인스턴스 클래스"
+  default     = "db.t3.micro"
 }
 variable "db_name" {
-  default     = "appdb"
-  type        = string
   description = "초기 생성 데이터베이스 이름"
-}
-variable "username" {
-  default     = "adminuser"
   type        = string
+  default     = "appdb"
+}
+variable "db_username" {
   description = "RDS 관리자 이름"
+  type        = string
+  default     = "adminuser"
 }

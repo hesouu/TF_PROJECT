@@ -20,25 +20,48 @@ resource "aws_internet_gateway" "main" {
 resource "aws_subnet" "public" {
   # 반복데이터 세팅 (cidr)
   for_each = local.public_subnets
-
   vpc_id     = aws_vpc.main.id
   cidr_block = each.value
   # 키값이 a면 a에 맞는 값들로 구성, c도 동일함
-  availability_zone = "loaca.azs[each.key]"
+  availability_zone = "local.azs[each.key]"
 
   map_public_ip_on_launch = true
   # DE-water-09-IaC-3tier-V1-PUBLIC-A, DE-water-09-IaC-3tier-V1-PUBLIC-C
   tags = {
     Name = "${local.project}-PUBLIC-${upper(each.keyt)}"
     # 커스텀 태그
-    Tier = "publiC"
+    Tier = "public"
   }
 }
 
 
 # Private Application Subnets - Web,  Was, internal ALB
+resource "aws_subnet" "app" {
+  for_each          = local.app_subnets
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = each.value
+  availability_zone = "local.azs[each.key]"
+  map_public_ip_on_launch = false
+  tags = {
+    Name = "${local.project}-APP-${upper(each.keyt)}"
+    # 커스텀 태그
+    Tier = "application"
+  }
+}
 
 # Private Db Subnets - RDS
+resource "aws_subnet" "db" {
+  for_each          = local.db_subnets
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = each.value
+  availability_zone = "local.azs[each.key]"
+  map_public_ip_on_launch = false
+  tags = {
+    Name = "${local.project}-DB-${upper(each.keyt)}"
+    # 커스텀 태그
+    Tier = "database"
+  }
+}
 
 # Public Route Table/association
 

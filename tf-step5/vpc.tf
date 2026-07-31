@@ -10,7 +10,7 @@ resource "aws_vpc" "main" {
 
 # Internet Gateway
 resource "aws_internet_gateway" "main" {
-  vpc_id = aws_vpc.mian.id
+  vpc_id = aws_vpc.main.id
   tags = {
     Name = "${local.project}-IIGWW"
   }
@@ -28,7 +28,7 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
   # DE-water-09-IaC-3tier-V1-PUBLIC-A, DE-water-09-IaC-3tier-V1-PUBLIC-C
   tags = {
-    Name = "${local.project}-PUBLIC-${upper(each.keyt)}"
+    Name = "${local.project}-PUBLIC-${upper(each.key)}"
     # 커스텀 태그
     Tier = "public"
   }
@@ -43,7 +43,7 @@ resource "aws_subnet" "app" {
   availability_zone = "local.azs[each.key]"
   map_public_ip_on_launch = false
   tags = {
-    Name = "${local.project}-APP-${upper(each.keyt)}"
+    Name = "${local.project}-APP-${upper(each.key)}"
     # 커스텀 태그
     Tier = "application"
   }
@@ -57,7 +57,7 @@ resource "aws_subnet" "db" {
   availability_zone = "local.azs[each.key]"
   map_public_ip_on_launch = false
   tags = {
-    Name = "${local.project}-DB-${upper(each.keyt)}"
+    Name = "${local.project}-DB-${upper(each.key)}"
     # 커스텀 태그
     Tier = "database"
   }
@@ -68,7 +68,7 @@ resource "aws_route_table" "public" {
   vpc_id       = aws_vpc.main.id
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.main.id
+    gateway_id = aws_internet_gateway.main.id
   }
   tags = {
     Name       = "${local.project}-PUBLIC-RT"
@@ -104,9 +104,9 @@ resource "aws_nat_gateway" "main" {
 resource "aws_route_table" "app" {
   for_each = local.azs
   vpc_id = aws_vpc.main.id
-  route = {
+  route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_net_gateway.main[each.key].id
+    gateway_id = aws_nat_gateway.main[each.key].id
   }
   tags = {
     Name = "${local.project}-APP-RT"
@@ -126,7 +126,7 @@ resource "aws_route_table" "db" {
     Name = "${local.project}-DB-RT"
   }
 }
-resource "aws_route_table_association" "priavate" {
+resource "aws_route_table_association" "private" {
   for_each = aws_subnet.db
   subnet_id = each.value.id
   route_table_id = aws_route_table.db.id

@@ -118,7 +118,7 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = "${local.cluster_name}-public-rt"
+    Name = "${local.cluster_name}-public-rt-${each.key}"
   }
 }
 resource "aws_route_table_association" "public" {

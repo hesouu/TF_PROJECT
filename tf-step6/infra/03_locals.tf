@@ -6,7 +6,7 @@ locals {
   # Multi-az 관련 ("a","c") 리소스 사용시 for_each 키로 활용
   az_keys = ["a", "c"]
 
-  public_subnet = {
+  public_subnets = {
     for index, key in local.az_keys : key => {
       az   = var.availability_zones[index]
       cidr = var.public_subnet_cidrs[index]

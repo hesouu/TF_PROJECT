@@ -73,12 +73,19 @@ variable "addtional_admin_role_arns" {
   default     = []
 }
 
-
+# ────────────────────────────────────────────────
+# RDS 설정 관련 변수
+# ────────────────────────────────────────────────
 
 variable "db_instance_class" {
   description = "DB 인스턴스 클레스"
   type        = string
   default     = "db.t3.micro"
+}
+variable "db_allocated_storage" {
+  description = "RDS 초기 스토리지 용량(GB)"
+  type        = number
+  default     = 20
 }
 variable "db_name" {
   description = "초기 생성 데이터베이스 이름"

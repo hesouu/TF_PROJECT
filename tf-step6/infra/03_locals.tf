@@ -25,23 +25,25 @@ locals {
     # }
 
 
-  public_subnets = {
-    a = "10.0.1.0/24"
-    b = "10.0.2.0/24"
-  }
   app_subnets = {
-    a = "10.0.11.0/24"
-    b = "10.0.12.0/24"
+        for index, key in local.az_keys : key => {
+            az   = var.availability_zones[ index ] 
+            cidr = var.app_subnet_cidrs[ index ]
+    }
   }
+
   db_subnets = {
-    a = "10.0.21.0/24"
-    b = "10.0.22.0/24"
+        for index, key in local.az_keys : key => {
+            az   = var.availability_zones[ index ] 
+            cidr = var.db_subnet_cidrs[ index ]
+    }
   }
 
-
+  # 모든 aws 리소스에 공통으로 적용
   common_tags = {
-    Project     = local.project
+    Project     = var.project_name
     Environment = var.environment
     ManageBy    = "Terraform"
+    Version     = "v2-eks-auto"
   }
  }

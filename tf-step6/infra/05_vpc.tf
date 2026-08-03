@@ -30,7 +30,7 @@ resource "aws_subnet" "public" {
   for_each = local.public_subnets # 동적으로 구성된 az별 가용영역명, cidr값
 
   vpc_id                  = aws_vpc.main.id
-  availability_zone       = each.value
+  availability_zone       = each.value.az
   cidr_block              = each.value.cidr
   map_public_ip_on_launch = true
   tags = {

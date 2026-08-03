@@ -23,7 +23,7 @@ variable "environment" {
 variable "vpc_cidr" {
   description = "VPC_CIDR"
   type        = string
-  default     = "10.0.0.0./16"
+  default     = "10.0.0.0/16"
 }
 variable "availability_zones" {
   description = "Multi-AZ 구성에 사용할 가용 영역 2개"

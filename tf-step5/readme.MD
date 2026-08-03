@@ -42,7 +42,7 @@ Prometheis -> Grafana -> Metrics -> Alert (슬랙등..)
         - 버전별
             - v0(기존) : client -> web
             - v1(금일) : client -> ALB(EIP 연결) -> web1 or web2
-            - v2(차주) : Ingress -> Serive -> pod
+            - v2(차주 8월 첫째주) : Ingress -> Serive -> pod
     - 데이터베이스 분리 운영
         - db는 AWS 전용 rds 서비스 사용 -> 생성시간이 대략 10분 소요
     - 운영형 아키텍쳐

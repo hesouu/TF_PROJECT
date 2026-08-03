@@ -148,7 +148,17 @@
 ```
 
 5. `05_vpc.tf` — VPC, 6개 Subnet, IGW, NAT Gateway, Route Table
+```
+~/tf-step6> terraform -chdir="./infra" apply
+---
+aws 콘솔 > vpc > 리소스맵 > 네트워크 구성 확인
+
+~/tf-step6> terraform -chdir="./infra" destroy
+```
 6. `06_iam.tf` — EKS Cluster Role과 Auto Mode Node Role
+```
+- 삭제시 해당 role이 삭제 안되면 -> 자동화 구성시 오류 발생함(중복 역할 생성)
+```
 7. `07_logging.tf` — EKS Control Plane CloudWatch Log Group
 
 

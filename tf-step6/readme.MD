@@ -1,15 +1,15 @@
 # 목표
-- v1 버전 기반 쿠버네티스 도입, 구조 변경, 새로운 개념 정리(운영/관리)
+- v1 버전기반 쿠버네티스 도입, 구조 변경, 새로운 개념 정리(운영/관리)
 - 쿠버네티스를 디테일하게 직접 구성 or [v]auto mode로 구성(관리파트) -> EKS, ECR 활용
 
 # 쿠버네티스
-- 컨테이너를 여러 서버에 배치, 장애 발생시 복구, 트래픽에 따라 확장/감소하는 시스템
-- 수많은 컨테이너화된 애플리케이션 배포, 확장, 관리을 자동화하는 오픈소스 기반의 `컨테이너 오케스트레이션 표준 플랫폼`
+- 컨테이너를 여러 서버에 배치, 장애 발생시 복구, 트레픽에 따라 확장/감소하는 시스템
+- 수많은 컨테이너화된 애프리케이션의 배포, 확장, 관리을 자동화하는 오픈소스 기반의 `컨테이너 오케스트레이션 표준 플랫폼`
 - 여러 서버(물리/가상)에 걸쳐 컨테이너의 그룹화, 무중단 배포, 로드밸런싱, 자가 치유(복구)등을 수행
 - 클러스터 단위로 작동
     - 구성
-        - 전체 클러스터의 두뇌 역할 : 컨트롤 플레인(마스터 노드) -> auto mode시 자동구성
-        - 실제 컨테이너 어플리케이션을 구동 : 데이터 플레인(워커노드) <- auto mode 구성시 집중 파트
+        - 전체 클러스터의 두뇌 역활 : 컨트롤 플레인(마스터 노드) -> auto mode시 자동구성
+        - 실제 컨테이너 어플리케이션을 구동 : 데이터 플레인(워커 노드) <- auto mode 구성시 집중 파트
 
 # 쿠버네티스 구조
 - 쿠버네티스 중심 기반 구성
@@ -18,7 +18,7 @@
 - AWS EKS 기반 구성
 ![AWS EKS 기반 구성](./쿠버네티스구조_1.png)
 
-- 트래픽 흐름도
+- 트레픽 흐름도
 ```
                          Internet
                             │
@@ -50,10 +50,9 @@
                             ▼
                      Amazon RDS MySQL
                       Multi-AZ 구성
-
 ```
 
-# 개별 요소 역할
+# 개별 요소 역활
 - Control Plane : 마스터 노드
 - Data Plane : 워커 노드(Worker Node)
 
@@ -80,17 +79,17 @@
 | Container Image | Amazon ECR                | WEB/WAS 이미지 저장       |
 | Database        | Amazon RDS                | MySQL 데이터 저장         |
 
-# Terraform KLubernetes / EKS Auto Mode 구성
+# Terraform Kubernetes/EKS Auto Mode 구성
 ## 비교
 - V1(금) : ALB, ASG, EC2, RDS등 활용하여 AWS 고가용성 인프라 구성, EC2 서버를 효율적 운영
 - V2(월) : 쿠버네티스 기반
-    - 컨테이너 기반 어플리케이션의 배포/복구.확장의 자동화, 오케스트레이션
+    - 컨테이너 기반 어플리케이션의 배포/복구/확장의 자동화, 오케스트레이션
     - 버전
-        - 직접 세밀하게 구성
-            - EKL의 내부 운영 구조까지 모두 설계( 컨트롤 페인 파트 직접 구성 )'
-        - Pod 하위 단위 인프라에 집중
+        - 직접 세밀하기 구성
+            - EKS의 내부 운영 구조까지 모두 설계( 컨트로 페인 파트 직접 구성 )
+        - Pod 하위 단위 인프라에 집중 구성
             - EKS Auto Mode 구성
-                - 쿠버네티스 사용하는데 운영(컨트롤 페인 파트 Auto mode 전담, 구성 관여x, 정보 제공 가능)
+                - 쿠버네티스 사용하는데 운영(컨트롤 페인 파트 Auto mode 전담, 구성 관여 x, 정보 제공 가능)
                 - 쿠버네티스 핵심 집중( Pod, Deployment, Service, Ingress, HPA, PDB )
                     - 데이터 페인에 집중
     - 장점
@@ -124,64 +123,65 @@
         - 서비스 확장 대응:	
             - WEB·WAS 외에 배치, 데이터 처리(데이터 엔진니어 요소, airflow), 모니터링(프로메테우스, 그라파타) 등 서비스가 늘어도 동일한 방식으로 관리
 
-
 # 구조 설계
 ## ~/infra 내 테라폼 파일
 1. [v]`01_versions.tf` — Terraform/AWS Provider 버전
-2. [v]`02_variables.tf` — 외부 입력값 -> tfvars로 세팅값으로 변경 가능
+2. [v]`02_variables.tf` — 외부 입력값 -> tfvars 로 세팅값으로 변경 가능함
 3. [v]`03_locals.tf` — 입력값을 조합한 공통 이름·서브넷 Map·태그
 4. [v]`04_provider.tf` — AWS 리전과 공통 태그
 ```
 # 중간 점검
 # -chdir="tf가 존재하는 경로" => 해당 위치에 tf에 대해 작업 진행
-~/tf-step6 > terraform -chdir="./infra" init
-# 포맷
-~/tf-step6 > terraform -chdir="./infra" fmt
+~/tf-step6> terraform -chdir="./infra"  init
+# 포멧
+~/tf-step6> terraform -chdir="./infra"  fmt
 # 검사
-~/tf-step6 > terraform -chdir="./infra" validate
+~/tf-step6> terraform -chdir="./infra"  validate
 # 플랜
-~/tf-step6 > terraform -chdir="./infra" plan
+~/tf-step6> terraform -chdir="./infra"  plan
 # 적용 -> output을 구성하여 결과 확인
-~/tf-step6 > terraform -chdir="./infra" apply
-# 삭제
-~/tf-step6 > terraform -chdir="./infra" destroy
+~/tf-step6> terraform -chdir="./infra"  apply
 ```
 
 5. [v]`05_vpc.tf` — VPC, 6개 Subnet, IGW, NAT Gateway, Route Table
 ```
-~/tf-step6> terraform -chdir="./infra" apply
+~/tf-step6> terraform -chdir="./infra"  apply
 ---
 aws 콘솔 > vpc > 리소스맵 > 네트워크 구성 확인
 
-~/tf-step6> terraform -chdir="./infra" destroy
+~/tf-step6> terraform -chdir="./infra"  destroy
 ```
 6. [v]`06_iam.tf` — EKS Cluster Role과 Auto Mode Node Role
 ```
-- 삭제시 해당 role이 삭제 안되면 -> 자동화 구성시 오류 발생함(중복 역할 생성)
+- 삭제시 해당 role이 삭제 않되면 => 자동화 구성시 오류 발생함(중복 역활 생성)
 ```
 7. [v]`07_logging.tf` — EKS Control Plane CloudWatch Log Group
 
-
-8. `08_eks.tf` — EKS Control Plane, Auto Mode, Metrics Server, Access Entry
-9. `09_security.tf` — EKS Cluster Security Group에서 RDS 3306 접근 허용
-10. `10_ecr.tf` — WEB/WAS 이미지 저장소와 이미지 정리 정책
-11. `11_rds.tf` — 비공개 MySQL Multi-AZ 및 Secrets Manager 암호
+8. [v]`08_eks.tf` — EKS Control Plane, Auto Mode, Metrics Server, Access Entry
+9. [v]`09_security.tf` — EKS Cluster Security Group에서 RDS 3306 접근 허용
+10. [v]`10_ecr.tf` — WEB/WAS 이미지 저장소와 이미지 정리 정책 - ci/cd 관련
+11. [v]`11_rds.tf` — 비공개 MySQL Multi-AZ 및 Secrets Manager 암호
 
 12. `12_outputs.tf` — 배포 스크립트가 사용할 생성 결과
 
-
-## /k8s 쿠버네티스 구성 파일
-- app.yaml.tpl
-    - 인프라 구성후 참조할 리로스값등을 구성 파일에 전달하기 위해 템플릿 형태로 구성
-    - $%{변수형} 주요 위치 곳곳에 세
-
-## ~/apss web, was 이미지 생성, 소스코드, Dockerfile
+## ~/apps web, was 이미지 생성, 소스코드, Dockerfile -> ci/cd 영향받음
 - web
-    - dockfile : 이미지 생성용 도커파일
+    - Dockfile : 이미지 생성용 도커파일
     - index.html : 홈페이지(/) 프런트코드(html, css, js)
-    - nginx.conf  : 프록시 구성 환경설정 파일 (web->was, 기타설정)
-
+        - Ingress -> Web Service -> Web Pod -> WAS Service -> Web Pod 확인됨
+        - Ingress -> Web Service -> Web Pod -> WAS Service -> Web Pod -> RDS 확인
+    - nginx.conf : 프록시 구성 환경설정 파일 (web->was, 기타설정)
+        - was에 대해 upstream 구성으로 정의, 8000번 포트등 설정
+        - /health : 즉시 응답 구성 ( web pod가 잘 작동 하고 있음을 보여주는 응답 )
+        - /api/   : was pod 방향으로 포워딩
+        - /       : index.html 응답
 - was
     - app.py : fastapi 작성된 백엔드 코드
     - Dockerfile : 이미지 생성용 도커파일
-    - requirements.txt : 필수패키지
+    - requirements.txt : 필수 패키지
+
+
+## ~/k8s 쿠버네티스 구성 파일
+- app.yaml.tpl
+    - 인프라 구성후 참조할 리소스값등을 구성 파일에 전달하기 위해 템플릿 형태로 구성
+    - ${변수명} 주요 표현 곳곳에 세

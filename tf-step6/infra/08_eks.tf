@@ -119,11 +119,41 @@ resource "aws_eks_addon" "metrics_server" {
 
 
 # ────────────────────────────────────────────────
-# IAM Role 부분 추가 등록등 처리
+# IAM Role 부분 추가 등록등 처리 - 초기 관리자 access 엔트리 
 # ────────────────────────────────────────────────
+# var.addtional_admin_role_arns에 설정된 계정들도 EKS 클러스터에 접근하도록 관리 주체도 등록
+# 현재는 비워 있음 => []
 resource "aws_eks_access_entry" "admin" {
-  
+  # 등록된 사용자 수만큼 eks 클러스터 관리자에 등록하기 위해 엔트리 반복 데이터로 배치
+  for_each = var.addtional_admin_role_arns
+
+  # 대상 eks 클러스터
+  cluster_name = aws_eks_cluster.main.name
+
+  # 접근할 role arn
+  principal_arn = each.value
+
+  # 타입 : 일반 Iam 사용자, 다른 일반 role에 부여
+  type = "STANDARD"
 }
+# 엔트리에 등록된 IAM Role에 eks 클러스터 관리자 권한을 실제 할당
 resource "aws_eks_access_policy_association" "admin" {
-  
+  # 대상자 (role등) 반복 설정
+  for_each = var.addtional_admin_role_arns
+  # 권한을 적용할 eks 클러스터
+  cluster_name = aws_eks_cluster.main.name
+
+  # 접근할 role arn
+  principal_arn = each.value
+
+  # 실제 관리자 정책 => AWS에서 사전에 확정한 정책 => arn 방식 표기
+  policy_arn = "arn:aws:eks::aws:clyster-aceess-policy/AmazonEKSClusterPolicy"
+
+  # 접근 범위
+  access_scope {
+    # 특정 네임스페이스가 아닌 전체 클러스터에 영향을 미침(전체 권한 적용)
+    type = "cluster"
+  }
+    # 의존성
+    depends_on = [ aws_eks_access_entry.admin ]
 }

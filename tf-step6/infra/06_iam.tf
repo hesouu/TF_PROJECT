@@ -28,8 +28,8 @@ data "aws_iam_policy_document" "eks_cluster_assume" {
 # 2. EKS Cluster 생성
 # ────────────────────────────────────────────────
 resource "aws_iam_role" "eks_cluster" {
-    # 특정 계정(구분용) 위한 롤 구성
-  name               = "${local.cluster_name}-cluster-role"
+  # 특정 계정(구분용) 위한 롤 구성
+  name = "${local.cluster_name}-cluster-role"
   # 역할에 정책 => 위에서 구성한 내용 조회하여 반영
   assume_role_policy = data.aws_iam_policy_document.eks_cluster_assume.json
 }
@@ -39,9 +39,9 @@ resource "aws_iam_role" "eks_cluster" {
 #   컴퓨팅, 클러스터, 블록스토리지, 로드밸런스, 네트워킹 정책 -> 나열
 # ────────────────────────────────────────────────
 locals {
-    # 필요한 정책들 나열하여 구성
-    # arn(amazon resource nmae) 리소스의 고유한 식별 이름
-    # arn:파티션:서비스명:리소스가 속한 리전:서비스 계정ID:리소스명(여기서는정책)
+  # 필요한 정책들 나열하여 구성
+  # arn(amazon resource nmae) 리소스의 고유한 식별 이름
+  # arn:파티션:서비스명:리소스가 속한 리전:서비스 계정ID:리소스명(여기서는정책)
   eks_auto_cluster_policies = {
     cluster        = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
     compute        = "arn:aws:iam::aws:policy/AmazonEKSComputePolicy"

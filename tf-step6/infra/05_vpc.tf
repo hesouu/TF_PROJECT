@@ -118,7 +118,7 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = "${local.cluster_name}-public-rt-${each.key}"
+    Name = "${local.cluster_name}-public-rt"
   }
 }
 resource "aws_route_table_association" "public" {
@@ -162,7 +162,7 @@ resource "aws_route_table" "db" {
   }
 }
 resource "aws_route_table_association" "db" {
-  for_each       = aws_subnet.db
+  for_each = aws_subnet.db
 
   subnet_id      = each.value.id
   route_table_id = aws_route_table.db[each.key].id
